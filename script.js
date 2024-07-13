@@ -22,6 +22,7 @@ function displayGameDetails(game) {
     if (game) {
         gameDetailsElement.innerHTML = `
                     <h2>${game.name}</h2>
+                    <img src="${game.background_image}" alt="${game.name} Cover Art" style="max-width: 300px;">
                     <p>Released: ${game.released}</p>
                     <p>Rating: ${game.rating}</p>
                     <p>Platforms: ${game.platforms.map(platform => platform.platform.name).join(', ')}</p>
