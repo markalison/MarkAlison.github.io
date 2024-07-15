@@ -82,3 +82,45 @@ function displayGameDetails(game) {
         gameDetailsElement.innerText = 'Game not found.';
     }
 }
+
+// Function to get recommendations from the backend
+async function getRecommendations() {
+    const genre = document.getElementById('genre').value;
+    const difficulty = document.getElementById('difficulty').value;
+    const timeToBeat = document.getElementById('timeToBeat').value;
+
+    const query = {
+        genre: genre,
+        difficulty: difficulty,
+        time_to_beat: parseInt(timeToBeat)
+    };
+
+    const response = await fetch('http://localhost:5000/recommend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(query)
+    });
+
+    const recommendations = await response.json();
+    displayRecommendations(recommendations);
+}
+
+// Function to display recommendations
+function displayRecommendations(recommendations) {
+    const recommendationsElement = document.getElementById('recommendations');
+    recommendationsElement.innerHTML = '';
+
+    recommendations.forEach(game => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <h3>${game.name}</h3>
+            <img src="${game.background_image}" alt="${game.name} Cover Art" style="max-width: 150px;">
+            <p>Released: ${game.released}</p>
+            <p>Rating: ${game.rating}</p>
+            <p>Platforms: ${game.platforms.map(platform => platform.platform.name).join(', ')}</p>
+        `;
+        recommendationsElement.appendChild(div);
+    });
+}
