@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.neighbors import NearestNeighbors
@@ -28,6 +28,10 @@ df_encoded = df[['genre_encoded', 'difficulty_encoded', 'time_to_beat']]
 knn = NearestNeighbors(n_neighbors=3, metric='euclidean')
 knn.fit(df_encoded)
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route('/recommend', methods=['POST'])
 def recommend_games():
     query = request.json
@@ -38,6 +42,17 @@ def recommend_games():
     distances, indices = knn.kneighbors([query_encoded])
     recommendations = df.iloc[indices[0]].to_dict(orient='records')
     return jsonify(recommendations)
+
+@app.route('/options')
+def get_options():
+    genres = df['genre'].unique().tolist()
+    difficulties = df['difficulty'].unique().tolist()
+    durations = sorted(df['time_to_beat'].unique().tolist())
+    return jsonify({
+        'genres': genres,
+        'difficulties': difficulties,
+        'durations': durations
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
